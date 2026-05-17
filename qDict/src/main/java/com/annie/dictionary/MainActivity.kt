@@ -138,17 +138,19 @@ class MainActivity : BaseActivity(), NavigatorFragment.NavigationCallbacks, OnCl
             showSearchContent()
         }
     }
-
-    private fun handleLookupIntent(intent: Intent?) {
-        var keyword = when {
-            intent?.action == Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
-            intent?.action == ACTION_LOOKUP -> intent.getStringExtra("KEYWORD")
-            intent?.action == ACTION_GOLDENDICT -> intent.getStringExtra("EXTRA_QUERY");
-            intent?.action == ACTION_COLORDICT -> intent.getStringExtra("EXTRA_QUERY");
-            else -> null
+    private fun extractKeyword(intent: Intent?): String {
+        return when (intent?.action) {
+            Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+            ACTION_LOOKUP -> intent.getStringExtra("KEYWORD") ?: ""
+            ACTION_GOLDENDICT -> intent.getStringExtra("EXTRA_QUERY") ?: ""
+            ACTION_COLORDICT -> intent.getStringExtra("EXTRA_QUERY") ?: ""
+            else -> ""
         }
-        if (!TextUtils.isEmpty(keyword)) {
-            mDictKeywordView?.setText(keyword.toString())
+    }
+    private fun handleLookupIntent(intent: Intent?) {
+        val keyword = extractKeyword(intent)
+        if (keyword.isNotEmpty()) {
+            mDictKeywordView?.setText(keyword)
             showSearchContent()
         }
     }
