@@ -138,20 +138,24 @@ class MainActivity : BaseActivity(), NavigatorFragment.NavigationCallbacks, OnCl
             showSearchContent()
         }
     }
-    private fun extractKeyword(intent: Intent?): String {
+    private fun extractKeyword(intent: Intent?): String? {
         return when (intent?.action) {
-            Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
-            ACTION_LOOKUP -> intent.getStringExtra("KEYWORD") ?: ""
-            ACTION_GOLDENDICT -> intent.getStringExtra("EXTRA_QUERY") ?: ""
-            ACTION_COLORDICT -> intent.getStringExtra("EXTRA_QUERY") ?: ""
-            else -> ""
-        }
+            Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
+            ACTION_LOOKUP -> intent.getStringExtra("KEYWORD")
+            ACTION_GOLDENDICT -> intent.getStringExtra("EXTRA_QUERY")
+            ACTION_COLORDICT -> intent.getStringExtra("EXTRA_QUERY")
+            else -> null
+        }?.takeIf { it.isNotBlank() }
     }
+
     private fun handleLookupIntent(intent: Intent?) {
         val keyword = extractKeyword(intent)
-        if (keyword.isNotEmpty()) {
+
+        if (keyword != null) {
             mDictKeywordView?.setText(keyword)
             showSearchContent()
+        } else {
+            Log.w("MainActivity", "Warning: Received empty/blank value in handleLookupIntent")
         }
     }
 
